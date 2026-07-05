@@ -1,0 +1,11 @@
+| Column                  | Meaning                       | Data Type | Example |
+| ----------------------- | ----------------------------- | --------- | ------- |
+| UDI                     | Unique record ID              | Integer   | 1       |
+| Product ID              | Product identifier            | String    | M14860  |
+| Type                    | Machine type                  | Category  | L, M, H |
+| Air temperature [K]     | Ambient air temperature       | Float     | 298.1   |
+| Process temperature [K] | Machine operating temperature | Float     | 308.6   |
+| Rotational speed [rpm]  | Machine speed                 | Integer   | 1551    |
+| Torque [Nm]             | Machine torque                | Float     | 42.8    |
+| Tool wear [min]         | Tool usage time               | Integer   | 0       |
+| Machine failure         | Target                        | Binary    | 0 or 1  |
