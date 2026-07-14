@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -150,6 +151,23 @@ elif page == "Prediction":
         else:
             st.error("Maintenance Required ⚠️")
 
+        if health_score >= 90:
+            category = "Excellent"
+        elif health_score >= 75:
+            category = "Good"
+        elif health_score >= 50:
+            category = "Needs Attention"
+        else:
+            category = "Critical"
+
+        st.metric("Health Category", category)
+        st.markdown(f"""
+        <div style="padding:20px;border-radius:15px;text-align:center;border:1px solid #d0d7de;">
+            <h2>{category}</h2>
+            <p>Machine Health Status</p>
+        </div>
+        """, unsafe_allow_html=True)
+
         c1, c2 = st.columns([1.2, 0.8])
         with c1:
             st.markdown(f"""
@@ -177,6 +195,24 @@ elif page == "Prediction":
             )
             st.plotly_chart(fig, use_container_width=True)
 
+        st.subheader("🔍 Prediction Explanation")
+        importance = model.feature_importances_
+        feature_df = pd.DataFrame({
+            "Feature": ["Machine Type", "Air Temperature", "Process Temperature", "RPM", "Torque", "Tool Wear"],
+            "Importance": importance
+        })
+        feature_df = feature_df.sort_values("Importance", ascending=False)
+        fig_exp = px.bar(
+            feature_df,
+            x="Importance",
+            y="Feature",
+            orientation="h",
+            title="Model Decision Factors"
+        )
+        st.plotly_chart(fig_exp, use_container_width=True)
+        top_feature = feature_df.iloc[0]["Feature"]
+        st.info(f"Most Influential Factor: {top_feature}")
+
         if risk == "High":
             st.markdown("""
             <div style="padding:20px;border-radius:10px;border:1px solid #d0d7de;">
@@ -199,6 +235,33 @@ elif page == "Prediction":
             </div>
             """, unsafe_allow_html=True)
 
+        report = f"""Industrial Predictive Maintenance Report
+
+Prediction:
+{prediction[0]}
+
+Failure Probability:
+{failure_probability:.2f}
+
+Risk:
+{risk}
+
+Health Score:
+{health_score:.2f}
+
+Health Category:
+{category}
+"""
+        st.download_button("📄 Download Report", report, file_name="machine_report.txt")
+        if risk == "High":
+            summary = "High failure risk detected. Immediate maintenance recommended."
+        elif risk == "Medium":
+            summary = "Moderate risk detected. Schedule maintenance."
+        else:
+            summary = "Machine operating normally. Continue monitoring."
+        st.subheader("Executive Summary")
+        st.warning(summary)
+
         logging.info(
             f"Prediction={prediction[0]}, Probability={failure_probability:.2f}"
         )
@@ -215,6 +278,10 @@ elif page == "Prediction":
             header=False,
             index=False
         )
+
+        os.makedirs("reports/daily_reports", exist_ok=True)
+        with open("reports/daily_reports/report.txt", "w") as file:
+            file.write(report)
 elif page == "Dashboard":
 
     st.header("📊 Industrial Analytics Dashboard")
@@ -359,6 +426,21 @@ elif page == "Dashboard":
             importance_chart,
             use_container_width=True
         )
+
+        failure_percent = (total_failures / total_records) * 100 if total_records else 0
+        st.metric("Failure %", f"{failure_percent:.2f}%")
+
+        corr = df.corr(numeric_only=True)
+        corr_fig = px.imshow(corr, text_auto=True, title="Correlation Matrix")
+        st.plotly_chart(corr_fig, use_container_width=True)
+
+        st.subheader("📈 Business Insights")
+        avg_torque = df["Torque_Nm"].mean()
+        avg_rpm = df["Rotational_speed_rpm"].mean()
+        avg_tool_wear = df["Tool_wear_min"].mean()
+        st.write(f"Average Torque: {avg_torque:.2f}")
+        st.write(f"Average RPM: {avg_rpm:.2f}")
+        st.write(f"Average Tool Wear: {avg_tool_wear:.2f}")
     with tab2:
 
         st.subheader(
@@ -381,6 +463,15 @@ elif page == "Dashboard":
                 history_df,
                 use_container_width=True
             )
+            if not history_df.empty:
+                history_df["Timestamp"] = pd.to_datetime(history_df["Timestamp"])
+                trend = px.line(
+                    history_df,
+                    x="Timestamp",
+                    y="Probability",
+                    title="Failure Probability Trend"
+                )
+                st.plotly_chart(trend, use_container_width=True)
             csv = history_df.to_csv(index=False)
             st.download_button(
                 "Download History",
