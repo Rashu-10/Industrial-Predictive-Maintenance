@@ -1,7 +1,9 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 import joblib
+from src.logger import logging
 
 from datetime import datetime
 st.set_page_config(
@@ -25,6 +27,30 @@ page = st.sidebar.radio(
     ]
 )
 if page == "Home":
+    st.markdown("""
+<div style="
+background: linear-gradient(
+90deg,
+#1565C0,
+#42A5F5
+);
+padding:25px;
+border-radius:15px;
+color:white;
+text-align:center;
+">
+
+<h1>
+⚙️ Industrial Predictive Maintenance
+</h1>
+
+<p>
+AI-powered Machine Health Monitoring Platform
+</p>
+
+</div>
+""",
+unsafe_allow_html=True)
 
     st.title("⚙️ Industrial Predictive Maintenance System")
 
@@ -110,63 +136,76 @@ elif page == "Prediction":
         failure_probability = (
             probability[0][1] * 100
         )
+        health_score = 100 - failure_probability
+
         if failure_probability < 30:
             risk = "Low"
-
         elif failure_probability < 70:
             risk = "Medium"
-
         else:
             risk = "High"
+
         if prediction[0] == 0:
-
-            st.success(
-                "Machine Healthy ✅"
-            )
-
+            st.success("Machine Healthy ✅")
         else:
+            st.error("Maintenance Required ⚠️")
 
-            st.error(
-                "Maintenance Required ⚠️"
+        c1, c2 = st.columns([1.2, 0.8])
+        with c1:
+            st.markdown(f"""
+            <div style="padding:18px;border-radius:12px;text-align:center;border:1px solid #d0d7de;">
+                <h3>Failure Probability</h3>
+                <h2>{failure_probability:.2f}%</h2>
+            </div>
+            """, unsafe_allow_html=True)
+            st.markdown(f"""
+            <div style="padding:18px;border-radius:12px;text-align:center;border:1px solid #d0d7de;">
+                <h3>Health Score</h3>
+                <h2>{health_score:.2f}%</h2>
+            </div>
+            """, unsafe_allow_html=True)
+            st.progress(int(health_score))
+            st.caption(f"Risk Level: {risk}")
+
+        with c2:
+            fig = go.Figure(
+                go.Indicator(
+                    mode="gauge+number",
+                    value=health_score,
+                    title={"text": "Machine Health"}
+                )
             )
+            st.plotly_chart(fig, use_container_width=True)
 
-        st.metric(
-            "Failure Probability",
-            f"{failure_probability:.2f}%"
-        )
-
-        st.info(
-            f"Risk Level: {risk}"
-        )
         if risk == "High":
-
-            st.error("""
-            Immediate Inspection Required
-
-            • Check bearings
-            • Check lubrication
-            • Inspect machine immediately
-            """)
-
+            st.markdown("""
+            <div style="padding:20px;border-radius:10px;border:1px solid #d0d7de;">
+                <h4>Maintenance Recommendation</h4>
+                <p>Immediate inspection is recommended. Check bearings, lubrication, and machine operating conditions.</p>
+            </div>
+            """, unsafe_allow_html=True)
         elif risk == "Medium":
-
-            st.warning("""
-            Schedule Maintenance Soon
-            """)
-
+            st.markdown("""
+            <div style="padding:20px;border-radius:10px;border:1px solid #d0d7de;">
+                <h4>Maintenance Recommendation</h4>
+                <p>Schedule preventive maintenance soon to avoid unexpected downtime.</p>
+            </div>
+            """, unsafe_allow_html=True)
         else:
+            st.markdown("""
+            <div style="padding:20px;border-radius:10px;border:1px solid #d0d7de;">
+                <h4>Maintenance Recommendation</h4>
+                <p>Continue normal monitoring and follow the standard inspection routine.</p>
+            </div>
+            """, unsafe_allow_html=True)
 
-            st.success("""
-            Continue Normal Operation
-            """)
+        logging.info(
+            f"Prediction={prediction[0]}, Probability={failure_probability:.2f}"
+        )
         history = pd.DataFrame({
-
             "Timestamp":[datetime.now()],
-
             "Prediction":[prediction[0]],
-
             "Probability":[failure_probability],
-
             "Risk":[risk]
         })
 
@@ -194,25 +233,68 @@ elif page == "Dashboard":
         total_records
     ) * 100
 
-    c1, c2, c3 = st.columns(3)
+    c1, c2, c3, c4 = st.columns(4)
 
     with c1:
-        st.metric(
-            "Total Machines",
-            total_records
-        )
+        st.markdown(f"""
+        <div style="padding:18px;border-radius:12px;text-align:center;border:1px solid #d0d7de;">
+            <h3>Total Machines</h3>
+            <h2>{total_records}</h2>
+        </div>
+        """, unsafe_allow_html=True)
 
     with c2:
-        st.metric(
-            "Failures",
-            total_failures
-        )
+        st.markdown(f"""
+        <div style="padding:18px;border-radius:12px;text-align:center;border:1px solid #d0d7de;">
+            <h3>Failures</h3>
+            <h2>{total_failures}</h2>
+        </div>
+        """, unsafe_allow_html=True)
 
     with c3:
-        st.metric(
-            "Failure Rate",
-            f"{failure_rate:.2f}%"
-        )
+        st.markdown(f"""
+        <div style="padding:18px;border-radius:12px;text-align:center;border:1px solid #d0d7de;">
+            <h3>Failure Rate</h3>
+            <h2>{failure_rate:.2f}%</h2>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with c4:
+        try:
+            history_df = pd.read_csv("data/prediction_history.csv")
+            predictions_made = len(history_df)
+        except FileNotFoundError:
+            predictions_made = 0
+        st.markdown(f"""
+        <div style="padding:18px;border-radius:12px;text-align:center;border:1px solid #d0d7de;">
+            <h3>Predictions Made</h3>
+            <h2>{predictions_made}</h2>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.subheader("System Statistics")
+    stat1, stat2, stat3 = st.columns(3)
+    with stat1:
+        st.markdown(f"""
+        <div style="padding:16px;border-radius:10px;text-align:center;border:1px solid #d0d7de;">
+            <h4>Average Torque</h4>
+            <p>{df['Torque_Nm'].mean():.2f} Nm</p>
+        </div>
+        """, unsafe_allow_html=True)
+    with stat2:
+        st.markdown(f"""
+        <div style="padding:16px;border-radius:10px;text-align:center;border:1px solid #d0d7de;">
+            <h4>Average RPM</h4>
+            <p>{df['Rotational_speed_rpm'].mean():.2f}</p>
+        </div>
+        """, unsafe_allow_html=True)
+    with stat3:
+        st.markdown(f"""
+        <div style="padding:16px;border-radius:10px;text-align:center;border:1px solid #d0d7de;">
+            <h4>Average Tool Wear</h4>
+            <p>{df['Tool_wear_min'].mean():.2f} min</p>
+        </div>
+        """, unsafe_allow_html=True)
     tab1, tab2 = st.tabs(
         ["Analytics", "History"]
     )
@@ -288,10 +370,23 @@ elif page == "Dashboard":
             history_df = pd.read_csv(
                 "data/prediction_history.csv"
             )
+            risk_filter = st.selectbox(
+                "Filter Risk",
+                ["All", "Low", "Medium", "High"]
+            )
+            if risk_filter != "All":
+                history_df = history_df[history_df["Risk"] == risk_filter]
 
             st.dataframe(
                 history_df,
                 use_container_width=True
+            )
+            csv = history_df.to_csv(index=False)
+            st.download_button(
+                "Download History",
+                csv,
+                "history.csv",
+                "text/csv"
             )
 
         except:
