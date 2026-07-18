@@ -1,9 +1,7 @@
-✔ Data Collection
+## Engineering Features
 
-✔ EDA
-
-✔ Data Preprocessing
-
-✔ Model Training
-
-✔ Prediction Pipeline
+- Logging
+- Exception Handling
+- Data Validation
+- Config Management
+- Modular Architecture

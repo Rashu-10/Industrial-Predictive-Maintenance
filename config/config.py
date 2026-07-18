@@ -1,13 +1,15 @@
-APP_TITLE = "Industrial Predictive Maintenance"
+from pathlib import Path
 
-APP_SUBTITLE = "AI-powered Machine Health Monitoring"
+PROJECT_ROOT = Path(__file__).parent.parent
 
-MODEL_PATH = "artifacts/model.pkl"
+DATA_DIR = PROJECT_ROOT / "data"
 
-SCALER_PATH = "artifacts/scaler.pkl"
+ARTIFACTS_DIR = PROJECT_ROOT / "artifacts"
 
-ENCODER_PATH = "artifacts/label_encoder.pkl"
+MODEL_PATH = ARTIFACTS_DIR / "model.pkl"
 
-DATA_PATH = "data/cleaned_data.csv"
+SCALER_PATH = ARTIFACTS_DIR / "scaler.pkl"
 
-HISTORY_PATH = "data/prediction_history.csv"
+ENCODER_PATH = ARTIFACTS_DIR / "label_encoder.pkl"
+
+PREDICTION_HISTORY = DATA_DIR / "prediction_history.csv"

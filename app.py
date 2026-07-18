@@ -1,8 +1,12 @@
 import streamlit as st
+from src.components import data_validation
 import joblib
+from config.config import *
 import pandas as pd
 import plotly.express as px
 from datetime import datetime
+from src.logger import logging
+from utils import model_exists
 st.set_page_config(page_title="Industrial Predictive Maintenance",page_icon="⚙️",layout="wide")
 
 st.title("⚙️ Industrial Predictive Maintenance System")
@@ -19,10 +23,19 @@ if page == "About":
   st.header("About")
   st.write("""Developed using •Python •Scikit-Learn •Streamlit •Plotly""")
 if page == "Prediction":
-  model = joblib.load("artifacts/model.pkl")
-  scaler = joblib.load("artifacts/scaler.pkl")
-  encoder = joblib.load("artifacts/label_encoder.pkl")
-  st.header("Machine Failure Prediction")
+  if not model_exists():
+    st.error("Model file missing")
+    st.stop()
+  try:
+    model = joblib.load(MODEL_PATH)
+    scaler = joblib.load(SCALER_PATH)
+    encoder = joblib.load(ENCODER_PATH)
+
+  except Exception as e:
+    logging.error(str(e))
+    st.error("Unable to load model artifacts.")
+    st.stop()
+  
   col1, col2 = st.columns(2)
   with col1:
     machine_type = st.selectbox("Machine Type",["L", "M", "H"])
@@ -34,11 +47,19 @@ if page == "Prediction":
     tool_wear = st.number_input("Tool Wear (min)", value=100)
   predict_btn = st.button("Predict Failure")
   if predict_btn:
+    logging.info("Prediction request received")
+    is_valid=data_validation.DataValidator.validate_input(air_temp,process_temp,rotational_speed,torque,tool_wear)
+    if not is_valid:
+      st.error("Invalid Input Values")
+      logging.warning("Invalid input received")
+      st.stop()
+
     machine_type_encoded = encoder.transform([machine_type])[0]
     input_df = pd.DataFrame({"Type":[machine_type_encoded], "Air_temperature_K":[air_temp], "Process_temperature_K":[process_temp], "Rotational_speed_rpm":[rotational_speed], "Torque_Nm":[torque], "Tool_wear_min":[tool_wear]})
     scaled_input = scaler.transform(input_df)
     prediction = model.predict(scaled_input)
     probability = model.predict_proba(scaled_input)
+    logging.info(f"Prediction Generated: {prediction[0]}")
     failure_probability = probability[0][1] * 100
     st.metric("Failure Probability", f"{failure_probability:.2f}%")
     if failure_probability < 30:
