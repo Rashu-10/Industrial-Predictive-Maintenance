@@ -1,12 +1,18 @@
 import streamlit as st
 from src.components import data_validation
+from src.explainability import ModelExplainer
 import joblib
 from config.config import *
 import pandas as pd
 import plotly.express as px
 from datetime import datetime
 from src.logger import logging
-from utils import model_exists
+from src.utils import model_exists
+from src.recommendation_engine import (RecommendationEngine)
+from src.report_generator import *
+
+
+
 st.set_page_config(page_title="Industrial Predictive Maintenance",page_icon="⚙️",layout="wide")
 
 st.title("⚙️ Industrial Predictive Maintenance System")
@@ -30,6 +36,7 @@ if page == "Prediction":
     model = joblib.load(MODEL_PATH)
     scaler = joblib.load(SCALER_PATH)
     encoder = joblib.load(ENCODER_PATH)
+    explainer = ModelExplainer(model)
 
   except Exception as e:
     logging.error(str(e))
@@ -58,40 +65,47 @@ if page == "Prediction":
     input_df = pd.DataFrame({"Type":[machine_type_encoded], "Air_temperature_K":[air_temp], "Process_temperature_K":[process_temp], "Rotational_speed_rpm":[rotational_speed], "Torque_Nm":[torque], "Tool_wear_min":[tool_wear]})
     scaled_input = scaler.transform(input_df)
     prediction = model.predict(scaled_input)
+    shap_values = explainer.explain(scaled_input)
     probability = model.predict_proba(scaled_input)
+    
     logging.info(f"Prediction Generated: {prediction[0]}")
     failure_probability = probability[0][1] * 100
+    confidence = max(
+    probability[0])*100
     st.metric("Failure Probability", f"{failure_probability:.2f}%")
+    st.metric("Confidence",f"{confidence:.2f}%")
+    recommendation = RecommendationEngine.recommend(failure_probability)
     if failure_probability < 30:
       risk = "Low"
     elif failure_probability < 70:
       risk = "Medium"
     else:
       risk = "High"
-    if risk=="Low":
-      st.success("Machine Healthy ✅")
-    elif risk == "Medium":
-      st.warning("Maintenance Recommended ⚠️")
-    else:
-      st.error("Immediate Inspection Required 🚨")
     st.info(f"Risk Level: {risk}")
     if risk == "High":
       st.error("Immediate Inspection Required 🚨")
-      recommendation = "Inspect machine immediately. Check bearings and lubrication. Review operating conditions."
 
     elif risk == "Medium":
       st.warning("Maintenance Recommended ⚠️")
-      recommendation = "Schedule maintenance soon. Monitor machine performance. Check wear components."
 
     else:
       st.success("Machine Healthy ✅")
-      recommendation = "Continue normal operation. Follow routine maintenance schedule."
 
     st.info(recommendation)
+    feature_importance=pd.DataFrame({"Feature":input_df.columns,"Impact":abs(shap_values[0,:,1])})
+    feature_importance = feature_importance.sort_values(by="Impact",ascending=False)
+
+    st.subheader("Why This Prediction?")
+    st.dataframe(feature_importance)
+    shap_chart = px.bar(feature_importance,x="Impact",y="Feature",orientation="h",title="Prediction Drivers")
+    st.plotly_chart(shap_chart, use_container_width=True)
+
       
     history = pd.DataFrame({"Timestamp":[datetime.now()], "Prediction":[prediction[0]], "Probability":[failure_probability], "Risk":[risk]})
     history.to_csv("data/prediction_history.csv", mode="a", header=False, index=False)
-  
+    st.download_button(label="Download CSV", data=history.to_csv(index=False), file_name="prediction_history.csv", mime="text/csv")
+    report = ReportGenerator.generate(failure_probability,risk,recommendation)
+    st.download_button(label="Download Report", data=report, file_name="maintenance_report.txt", mime="text/plain")   
 if page == "Dashboard":
   st.header("📊 Industrial Analytics Dashboard")
   df=pd.read_csv("data/cleaned_data.csv")
@@ -118,6 +132,8 @@ if page == "Dashboard":
     importance_df = pd.DataFrame({"Feature":["Type","Air Temp","Process Temp","RPM","Torque","Tool Wear"], "Importance": model.feature_importances_})
     importance_chart = px.bar(importance_df, x="Importance", y="Feature", orientation="h", title="Feature Importance")
     st.plotly_chart(importance_chart, use_container_width=True)
+    st.subheader("Model Insights")
+    st.write("""Random Forest was selectedbecause it achieved thehighest F1 Score and ROC-AUC.""")
   with tab2:
     history_df = pd.read_csv(
       "data/prediction_history.csv",
@@ -125,7 +141,7 @@ if page == "Dashboard":
       on_bad_lines="skip"
     )
     st.dataframe(history_df, use_container_width=True)
-
+  
 
 
 

@@ -1,3 +1,10 @@
+from config.config import MODEL_PATH
+
+def model_exists():
+    return MODEL_PATH.exists()
+
+
+
 import joblib
 
 def load_object(file_path):
