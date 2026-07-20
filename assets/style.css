@@ -1,0 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Global styles */
+html, body, [data-testid="stAppViewContainer"] {
+    font-family: 'Inter', sans-serif !important;
+    background: linear-gradient(135deg, #060B12 0%, #03060A 50%, #0A111E 100%) !important;
+    color: #E2E8F0 !important;
+}
+
+/* Custom header/banner style */
+.banner-container {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    box-shadow: 0px 8px 32px rgba(0, 242, 254, 0.15);
+    border: 1px solid rgba(0, 242, 254, 0.2);
+}
+
+.banner-img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+/* Glassmorphism card system */
+.glass-card {
+    background: rgba(13, 27, 42, 0.45) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(0, 242, 254, 0.15) !important;
+    border-radius: 16px !important;
+    padding: 24px !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
+    margin-bottom: 20px !important;
+    transition: all 0.3s ease-in-out !important;
+}
+
+.glass-card:hover {
+    border-color: rgba(0, 242, 254, 0.4) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 242, 254, 0.12) !important;
+}
+
+/* Hero section */
+.hero-title {
+    font-size: 3.2rem !important;
+    font-weight: 800 !important;
+    background: linear-gradient(90deg, #00F2FE 0%, #4FACFE 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    text-align: center !important;
+    margin-bottom: 10px !important;
+    text-shadow: 0 0 30px rgba(0, 242, 254, 0.2) !important;
+}
+
+.hero-subtitle {
+    font-size: 1.4rem !important;
+    color: #94A3B8 !important;
+    text-align: center !important;
+    margin-bottom: 30px !important;
+    font-weight: 300 !important;
+}
+
+/* Custom KPIs */
+.kpi-container {
+    display: flex;
+    justify-content: space-around;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.kpi-card {
+    flex: 1;
+    min-width: 200px;
+    background: rgba(13, 27, 42, 0.65) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(0, 242, 254, 0.15) !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    text-align: center !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+    transition: transform 0.3s ease, border-color 0.3s ease !important;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(0, 242, 254, 0.4) !important;
+}
+
+.kpi-value {
+    font-size: 2.2rem !important;
+    font-weight: 700 !important;
+    color: #00F2FE !important;
+    margin-bottom: 5px !important;
+    text-shadow: 0 0 10px rgba(0, 242, 254, 0.3) !important;
+}
+
+.kpi-label {
+    font-size: 0.9rem !important;
+    color: #94A3B8 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+}
+
+/* Standard Streamlit Components styling */
+[data-testid="stMetric"] {
+    background-color: rgba(15, 23, 42, 0.5) !important;
+    border: 1px solid rgba(0, 242, 254, 0.15) !important;
+    border-radius: 12px !important;
+    padding: 15px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-testid="stMetric"] div {
+    color: #E2E8F0 !important;
+}
+
+/* Buttons style */
+div.stButton > button {
+    background: linear-gradient(90deg, #00F2FE 0%, #4FACFE 100%) !important;
+    color: #0F172A !important;
+    font-weight: 700 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 12px 28px !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0px 4px 15px rgba(0, 242, 254, 0.4) !important;
+    font-size: 1rem !important;
+    width: 100% !important;
+}
+
+div.stButton > button:hover {
+    transform: scale(1.02) !important;
+    box-shadow: 0px 6px 20px rgba(0, 242, 254, 0.6) !important;
+    color: #0F172A !important;
+}
+
+/* Sidebar Styling */
+[data-testid="stSidebar"] {
+    background-color: #04070D !important;
+    border-right: 1px solid rgba(0, 242, 254, 0.15) !important;
+}
+
+/* Plotly containers */
+.plotly-graph-div {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+}
+
+/* Form input fields style adjustments */
+.stTextInput input, .stNumberInput input, .stSelectbox select {
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    color: #E2E8F0 !important;
+    border: 1px solid rgba(0, 242, 254, 0.2) !important;
+    border-radius: 8px !important;
+}

@@ -1,0 +1,63 @@
+========================================================================
+            INDUSTRIAL PREDICTIVE MAINTENANCE SYSTEM - REDESIGN SUMMARY
+========================================================================
+
+Goal: Redesign the Streamlit interface of the AI Powered Industrial Predictive 
+      Maintenance System to match the premium, glassmorphic dark-mode style 
+      of the Crop Yield Predictor app, while retaining all core ML diagnostics 
+      and prediction logic.
+
+------------------------------------------------------------------------
+1. VISUAL ASSET ADDITIONS
+------------------------------------------------------------------------
+- Generated and saved two high-fidelity tech assets:
+  * images/logo.png: A glowing neon cyan industrial gear/circuit logo representing AI-driven factories.
+  * images/banner.png: A wide-aspect technology banner featuring futuristic factory robotic lines and digital overlays.
+
+------------------------------------------------------------------------
+2. CODE & STYLE MODIFICATIONS
+------------------------------------------------------------------------
+- assets/style.css:
+  * Implemented a dark metallic gradient background (#060B12 to #0A111E).
+  * Added custom CSS class '.glass-card' defining semi-transparent panels, background blur filter (backdrop-filter: blur(12px)), and neon cyan borders.
+  * Styled metric boxes, form fields, and dropdowns for a sleek high-tech theme.
+  * Customized Streamlit buttons with neon blue gradients and scale transformations on hover.
+
+- src/ui/styles.py:
+  * Rewrote load_css() to dynamically read the CSS file directly from 'assets/style.css', avoiding duplicate styles.
+
+- src/pages/home.py:
+  * Added the top wide technology banner.
+  * Designed custom HTML KPI cards displaying telemetry records size (10k), machine types (3), sensor indicators (6), and model accuracy (98.0% F1-score).
+  * Grouped the benefits and overview descriptions inside glassmorphic cards.
+
+- src/pages/prediction.py:
+  * Grouped the six telemetry input parameters (Machine Type, Temperature, RPM, Torque, Wear) inside a glowing glassmorphism panel.
+  * Styled diagnostic results using custom neon risk bars and risk status badges (Low/Medium/High).
+  * Aligned the Plotly SHAP prediction drivers chart with dark-mode transparent parameters.
+  * Structured CSV and report download buttons side-by-side.
+
+- src/pages/dashboard.py:
+  * Redesigned the main overview metrics (Total Machines, Detected Failures, System Failure Rate) using custom neon-cyan KPI card components.
+  * Styled all 4 Plotly telemetry charts (pie chart, histogram, scatter plot, feature importance) using the 'plotly_dark' template and transparent background.
+
+- src/pages/about.py:
+  * Structured the project's framework stack, libraries, and pipeline workflow into glassmorphic cards.
+
+- app.py & app1.py:
+  * Replaced the standard sidebar radio navigation with a premium top-level tabbed navigation layout (Home Overview, Health Diagnostics, Analytics Dashboard, Technical Specs).
+  * Styled the sidebar to display the new glowing gear logo and model parameters.
+
+------------------------------------------------------------------------
+3. HOW TO RUN THE PROJECT LOCALLY
+------------------------------------------------------------------------
+Ensure you have the required dependencies installed (from requirements.txt):
+  pip install -r requirements.txt
+
+Run either entry point in your terminal:
+  streamlit run app.py
+  (or: streamlit run app1.py)
+
+The app will launch in your default web browser at:
+  http://localhost:8501
+========================================================================
