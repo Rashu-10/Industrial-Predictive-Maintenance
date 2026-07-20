@@ -134,32 +134,28 @@ def show_prediction():
 
         # Custom Metrics and Risk Meter inside glass card
         st.markdown(
-            f"""
-            <div class="glass-card">
-                <div style="display: flex; flex-wrap: wrap; justify-content: space-around; gap: 15px; margin-bottom: 10px;">
-                    <div style="text-align: center; flex: 1; min-width: 150px;">
-                        <span style="color: #94A3B8; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Failure Probability</span>
-                        <div style="font-size: 2.5rem; font-weight: 700; color: #00F2FE; margin-top: 5px;">{failure_probability:.2f}%</div>
-                    </div>
-                    <div style="text-align: center; flex: 1; min-width: 150px;">
-                        <span style="color: #94A3B8; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Model Confidence</span>
-                        <div style="font-size: 2.5rem; font-weight: 700; color: #CBD5E1; margin-top: 5px;">{confidence:.2f}%</div>
-                    </div>
-                    <div style="text-align: center; flex: 1; min-width: 150px; background-color: {risk_bg}; border-radius: 12px; padding: 10px; border: 1px solid {risk_color}33;">
-                        <span style="color: #94A3B8; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Risk Category</span>
-                        <div style="font-size: 2.5rem; font-weight: 700; color: {risk_color}; margin-top: 5px;">{risk}</div>
-                    </div>
-                </div>
-                
-                <!-- Custom Progress Bar / Risk Meter -->
-                <div style="margin-top: 25px;">
-                    <span style="color: #94A3B8; font-size: 0.85rem;">Risk Meter Level:</span>
-                    <div style="width: 100%; background-color: rgba(255, 255, 255, 0.08); border-radius: 8px; height: 16px; margin-top: 5px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.05);">
-                        <div style="width: {max(failure_probability, 3.0)}%; background: linear-gradient(90deg, #10B981 0%, #F59E0B 50%, #EF4444 100%); height: 100%; border-radius: 8px; transition: width 0.8s ease-in-out;"></div>
-                    </div>
-                </div>
-            </div>
-            """,
+            f"""<div class="glass-card">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-around; gap: 15px; margin-bottom: 10px;">
+<div style="text-align: center; flex: 1; min-width: 150px;">
+<span style="color: #94A3B8; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Failure Probability</span>
+<div style="font-size: 2.5rem; font-weight: 700; color: #00F2FE; margin-top: 5px;">{failure_probability:.2f}%</div>
+</div>
+<div style="text-align: center; flex: 1; min-width: 150px;">
+<span style="color: #94A3B8; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Model Confidence</span>
+<div style="font-size: 2.5rem; font-weight: 700; color: #CBD5E1; margin-top: 5px;">{confidence:.2f}%</div>
+</div>
+<div style="text-align: center; flex: 1; min-width: 150px; background-color: {risk_bg}; border-radius: 12px; padding: 10px; border: 1px solid {risk_color}33;">
+<span style="color: #94A3B8; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Risk Category</span>
+<div style="font-size: 2.5rem; font-weight: 700; color: {risk_color}; margin-top: 5px;">{risk}</div>
+</div>
+</div>
+<div style="margin-top: 25px;">
+<span style="color: #94A3B8; font-size: 0.85rem;">Risk Meter Level:</span>
+<div style="width: 100%; background-color: rgba(255, 255, 255, 0.08); border-radius: 8px; height: 16px; margin-top: 5px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.05);">
+<div style="width: {max(failure_probability, 3.0)}%; background: linear-gradient(90deg, #10B981 0%, #F59E0B 50%, #EF4444 100%); height: 100%; border-radius: 8px; transition: width 0.8s ease-in-out;"></div>
+</div>
+</div>
+</div>""",
             unsafe_allow_html=True
         )
 
