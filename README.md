@@ -2,7 +2,7 @@
 
 ## 🔗 Live Application
 
-[Industrial Predictive Maintenance System](https://industrial-predictive-maintenance-system-opjx67kvwfvxeyudd75ev.streamlit.app/?utm_source=chatgpt.com)
+[Industrial Predictive Maintenance System](https://industrial-predictive-maintenance-system-nsvy5kfguhkazgebw8qiw.streamlit.app/)
 
 ---
 
