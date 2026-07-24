@@ -10,4 +10,4 @@ class RecommendationEngine:
     elif probability>30:
       return """Schedule preventive maintenance"""
     
-    return """Normal opeartion"""
+    return """Normal operation"""

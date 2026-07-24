@@ -1,4 +1,6 @@
 import os
+import warnings
+warnings.filterwarnings("ignore", message="Trying to unpickle estimator")
 import streamlit as st
 
 from src.pages.home import show_home
